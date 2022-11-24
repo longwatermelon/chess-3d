@@ -38,7 +38,7 @@ public:
     void rotate(glm::vec3 rot);
 
     void select(glm::ivec3 coord);
-    std::vector<glm::ivec3> possible_moves(glm::ivec3 coord);
+    std::vector<glm::ivec3> possible_moves(glm::ivec3 coord, bool ignore_check = false);
 
     void detect_check(Color c);
 

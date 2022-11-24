@@ -273,7 +273,7 @@ void Board::bishop_moves(std::vector<glm::ivec3> &moves, glm::ivec3 coord, Piece
     }
 }
 
-std::vector<glm::ivec3> Board::possible_moves(glm::ivec3 coord)
+std::vector<glm::ivec3> Board::possible_moves(glm::ivec3 coord, bool ignore_check)
 {
     Piece p = m_board[coord.y][coord.x][coord.z];
     std::vector<glm::ivec3> moves;
@@ -284,26 +284,27 @@ std::vector<glm::ivec3> Board::possible_moves(glm::ivec3 coord)
     {
         // Forward moves
         int dy = p.color == Color::WHITE ? -1 : 1;
-        int y = coord.y;
-        coord.y += dy;
+        glm::ivec3 pos = coord;
+        int y = pos.y;
+        pos.y += dy;
 
-        if (at(coord).type == PieceType::NONE)
-            moves.emplace_back(coord);
+        if (at(pos).type == PieceType::NONE)
+            moves.emplace_back(pos);
 
         if ((y == 1 && p.color == Color::BLACK) || (y == 6 && p.color == Color::WHITE))
         {
-            coord.y += dy;
+            pos.y += dy;
 
-            if (at(coord).type == PieceType::NONE)
-                moves.emplace_back(coord);
+            if (at(pos).type == PieceType::NONE)
+                moves.emplace_back(pos);
         }
 
         // Take moves
-        for (int x = std::max(coord.x - 1, 0); x <= std::min(coord.x + 1, 7); ++x)
+        for (int x = std::max(pos.x - 1, 0); x <= std::min(pos.x + 1, 7); ++x)
         {
-            for (int z = std::max(coord.z - 1, 0); z <= std::min(coord.z + 1, 7); ++z)
+            for (int z = std::max(pos.z - 1, 0); z <= std::min(pos.z + 1, 7); ++z)
             {
-                if (x == coord.x && z == coord.z) continue;
+                if (x == pos.x && z == pos.z) continue;
                 glm::ivec3 pos = glm::ivec3(x, y + dy, z);
                 if (at(pos).type != PieceType::NONE && at(pos).color != p.color)
                     moves.emplace_back(pos);
@@ -362,6 +363,33 @@ std::vector<glm::ivec3> Board::possible_moves(glm::ivec3 coord)
     default: break;
     }
 
+    if (!ignore_check && m_check != Color::NONE)
+    {
+        std::vector<glm::ivec3> legal_moves;
+
+        for (auto &m : moves)
+        {
+            // Simulate move and check if king is still in check
+            Piece orig = at(m);
+            at(m) = p;
+            PieceType type = at(coord).type;
+            at(coord).type = PieceType::NONE;
+
+            Color check = m_check;
+            detect_check(m_check);
+            if (m_check == Color::NONE)
+            {
+                m_check = check;
+                legal_moves.emplace_back(m);
+            }
+
+            at(m) = orig;
+            at(coord).type = type;
+        }
+
+        moves = legal_moves;
+    }
+
     return moves;
 }
 
@@ -382,7 +410,7 @@ void Board::detect_check(Color c)
                 glm::ivec3 pos(x, y, z);
                 if (at(pos).color != c)
                 {
-                    std::vector<glm::ivec3> tmp = possible_moves(pos);
+                    std::vector<glm::ivec3> tmp = possible_moves(pos, true);
                     moves.insert(moves.end(), tmp.begin(), tmp.end());
                 }
 
