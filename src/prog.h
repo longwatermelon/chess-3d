@@ -1,5 +1,6 @@
 #pragma once
 #include "render.h"
+#include "board.h"
 #include <SDL2/SDL.h>
 
 class Prog
@@ -21,5 +22,7 @@ private:
     uint32_t m_scr[600 * 600];
     float m_zbuf[600 * 600];
     SDL_Texture *m_scrtex{ nullptr };
+
+    Board m_board;
 };
 

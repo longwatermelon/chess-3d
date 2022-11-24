@@ -4,7 +4,7 @@
 #include "rotate.h"
 
 Prog::Prog(SDL_Window *w, SDL_Renderer *r)
-    : m_window(w), m_rend(r)
+    : m_window(w), m_rend(r), m_board(glm::vec3(0.f, 0.f, 15.f), "res/")
 {
     m_scrtex = SDL_CreateTexture(m_rend,
         SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
@@ -21,19 +21,6 @@ void Prog::mainloop()
 {
     SDL_Event evt;
 
-    /* Tri t{ */
-    /*     .verts = { */
-    /*         glm::vec3(0.f, -.5f, 5.f), */
-    /*         glm::vec3(-.5f, .5f, 5.f), */
-    /*         glm::vec3(.5f, .5f, 5.f) */
-    /*     }, */
-    /*     .color = { 255, 255, 255 }, */
-    /*     .norm = { 1.f, 0.f, 0.f } */
-    /* }; */
-
-    Model m(glm::vec3(0.f, 0.f, 5.f), glm::vec3(0.f), "res/cube.obj");
-    /* Model m2(glm::vec3(0.f, 0.f, 3.f), glm::vec3(0.f), "res/cube.obj"); */
-
     while (m_running)
     {
         while (SDL_PollEvent(&evt))
@@ -46,14 +33,12 @@ void Prog::mainloop()
             }
         }
 
-        m.rotate(glm::vec3(.01f, 0.00f, 0.01f));
-        /* m2.rotate(glm::vec3(.01f, 0.01f, 0.02f)); */
+        m_board.rotate(glm::vec3(.01f));
 
         SDL_RenderClear(m_rend);
         reset_buffers();
 
-        m.render(m_scr, m_zbuf);
-        /* m2.render(m_scr, m_zbuf); */
+        m_board.render(m_scr, m_zbuf);
 
         SDL_UpdateTexture(m_scrtex, 0, m_scr, 600 * sizeof(uint32_t));
         SDL_RenderCopy(m_rend, m_scrtex, 0, 0);

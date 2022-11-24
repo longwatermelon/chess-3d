@@ -20,8 +20,7 @@ static std::vector<std::string> split_string(std::string str, const std::string 
     return res;
 }
 
-Model::Model(glm::vec3 pos, glm::vec3 rot, const std::string &src)
-    : m_pos(pos), m_rot(rot)
+Model::Model(const std::string &src)
 {
     std::ifstream ifs(src);
     std::string buf;
@@ -86,34 +85,24 @@ Model::~Model()
 {
 }
 
-static Tri transform_tri(glm::vec3 mpos, glm::vec3 mrot, Tri t)
+static Tri transform_tri(glm::vec3 mpos, glm::vec3 mrot, glm::vec3 center, Tri t)
 {
     for (auto &v : t.verts)
     {
-        v = rotate::point(v, mrot);
         v += mpos;
+        v = rotate::point(v, mrot, center);
     }
 
     t.norm = rotate::point(t.norm, mrot);
     return t;
 }
 
-void Model::render(uint32_t *scr, float *zbuf)
+void Model::render(glm::vec3 pos, glm::vec3 rot, glm::vec3 center, uint32_t *scr, float *zbuf)
 {
     for (auto &t : m_tris)
     {
-        Tri tmp = transform_tri(m_pos, m_rot, t);
+        Tri tmp = transform_tri(pos, rot, center, t);
         rend::triangle(tmp, scr, zbuf);
     }
-}
-
-void Model::move(glm::vec3 dir)
-{
-    m_pos += dir;
-}
-
-void Model::rotate(glm::vec3 rot)
-{
-    m_rot += rot;
 }
 
