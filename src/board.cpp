@@ -335,6 +335,25 @@ std::vector<glm::ivec3> Board::possible_moves(glm::ivec3 coord)
             }
         }
     } break;
+    case PieceType::KNIGHT:
+    {
+        for (int y = std::max(coord.y - 2, 0); y <= std::min(coord.y + 2, 7); ++y)
+        {
+            for (int x = std::max(coord.x - 2, 0); x <= std::min(coord.x + 2, 7); ++x)
+            {
+                for (int z = std::max(coord.z - 2, 0); z <= std::min(coord.z + 2, 7); ++z)
+                {
+                    if (std::abs(y - coord.y) * std::abs(x - coord.x) * std::abs(z - coord.z) == 2)
+                    {
+                        glm::ivec3 pos(x, y, z);
+                        if (at(pos).type == PieceType::NONE || (at(pos).type != PieceType::NONE && at(pos).color != p.color))
+                            moves.emplace_back(pos);
+
+                    }
+                }
+            }
+        }
+    } break;
     default: break;
     }
 
