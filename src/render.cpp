@@ -28,7 +28,7 @@ static void scanline(int ty, int by, SCInfo &s1, SCInfo &s2, const Tri &tri, uin
             if (x < 0)
             {
                 z += sz * -x;
-                x = -1;
+                x = 0;
                 continue;
             }
 
@@ -40,7 +40,10 @@ static void scanline(int ty, int by, SCInfo &s1, SCInfo &s2, const Tri &tri, uin
                 if (z < zbuf[i])
                 {
                     zbuf[i] = z;
-                    scr[i] = 0x00000000 | (int)(tri.norm.x * 255.f) << 16 | (int)(tri.norm.y * 255.f) << 8 | (int)(tri.norm.z * 255.f);
+
+                    glm::vec3 col = glm::vec3(tri.color.r, tri.color.g, tri.color.b);
+                    glm::vec3 shaded = (std::max(0.f, 1.f - glm::dot(tri.norm, glm::vec3(0.f, 0.f, 1.f)))) * col;
+                    scr[i] = 0x00000000 | (int)(shaded.x) << 16 | (int)(shaded.y) << 8 | (int)(shaded.z);
                 }
             }
         }
@@ -72,7 +75,7 @@ void rend::triangle(Tri t, uint32_t *scr, float *zbuf)
     auto gen_sc = [proj](int a, int b){
         float dy = proj[b].y - proj[a].y;
         return SCInfo{
-            .x = roundf(proj[a].x), .z = proj[a].z,
+            .x = std::round(proj[a].x), .z = proj[a].z,
             .sx = (proj[b].x - proj[a].x) / dy,
             .sz = (proj[b].z - proj[a].z) / dy
         };

@@ -1,50 +1,119 @@
 #include "model.h"
+#include "rotate.h"
 #include <fstream>
 #include <iostream>
 #include <sstream>
 
-Model::Model(const std::string &src)
+static std::vector<std::string> split_string(std::string str, const std::string &delim)
+{
+    std::vector<std::string> res;
+    size_t pos = 0;
+    std::string tok;
+
+    while ((pos = str.find(delim)) != std::string::npos)
+    {
+        res.emplace_back(str.substr(0, pos));
+        str.erase(0, pos + delim.size());
+    }
+
+    res.emplace_back(str);
+    return res;
+}
+
+Model::Model(glm::vec3 pos, glm::vec3 rot, const std::string &src)
+    : m_pos(pos), m_rot(rot)
 {
     std::ifstream ifs(src);
     std::string buf;
-    // Skip to first line of data
-    for (int i = 0; i < 5; ++i) std::getline(ifs, buf);
+    std::vector<std::string> lines;
 
-    std::vector<glm::vec3> verts, norms;
+    while (std::getline(ifs, buf))
+        lines.emplace_back(buf);
 
-    while (buf.substr(0, 2) == "v ")
+    size_t n = 0;
+    while (lines[n][0] != 'v') ++n;
+
+    std::vector<glm::vec3> verts;
+    std::vector<glm::vec3> norms;
+
+    while (lines[n].substr(0, 2) == "v ")
     {
         glm::vec3 v;
-        std::stringstream ss(buf);
         char c;
-        ss >> c >> v.x >> v.y >> v.z;
+        std::stringstream(lines[n]) >> c >> v.x >> v.y >> v.z;
         verts.emplace_back(v);
-        std::getline(ifs, buf);
+        ++n;
     }
 
-    while (buf.substr(0, 2) == "vn")
+    while (lines[n].substr(0, 2) == "vn")
     {
-        glm::vec3 n;
+        glm::vec3 norm;
         std::string s;
-        std::stringstream ss(buf);
-        ss >> s >> n.x >> n.y >> n.z;
-        std::getline(ifs, buf);
+        std::stringstream(lines[n]) >> s >> norm.x >> norm.y >> norm.z;
+        norms.emplace_back(norm);
+        ++n;
     }
 
-    while (buf[0] != 'f') std::getline(ifs, buf);
+    while (lines[n][0] != 'f') ++n;
 
-    do
+    while (n < lines.size() && lines[n][0] == 'f')
     {
-        std::stringstream ss(buf);
-        char c;
-    } while (std::getline(ifs, buf));
+        Tri t;
+        std::vector<std::string> split = split_string(lines[n], " ");
+
+        for (int i = 0; i < 3; ++i)
+        {
+            std::vector<std::string> s = split_string(split[i + 1], "/");
+            t.verts[i] = verts[std::stoi(s[0]) - 1];
+            t.norm = norms[std::stoi(s[2]) - 1];
+        }
+
+        t.color = { 255, 255, 255 };
+        m_tris.emplace_back(t);
+        ++n;
+    }
+
+    /* for (auto &t : m_tris) */
+    /* { */
+    /*     std::cout << "Verts: "; */
+    /*     for (auto &v : t.verts) */
+    /*         std::cout << "(" << v.x << ", " << v.y << ", " << v.z << ") "; */
+    /*     std::cout << " | Norm: " << t.norm.x << ", " << t.norm.y << ", " << t.norm.z << "\n"; */
+    /* } */
 }
 
 Model::~Model()
 {
 }
 
+static Tri transform_tri(glm::vec3 mpos, glm::vec3 mrot, Tri t)
+{
+    for (auto &v : t.verts)
+    {
+        v = rotate::point(v, mrot);
+        v += mpos;
+    }
+
+    t.norm = rotate::point(t.norm, mrot);
+    return t;
+}
+
 void Model::render(uint32_t *scr, float *zbuf)
 {
+    for (auto &t : m_tris)
+    {
+        Tri tmp = transform_tri(m_pos, m_rot, t);
+        rend::triangle(tmp, scr, zbuf);
+    }
+}
+
+void Model::move(glm::vec3 dir)
+{
+    m_pos += dir;
+}
+
+void Model::rotate(glm::vec3 rot)
+{
+    m_rot += rot;
 }
 

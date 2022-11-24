@@ -21,17 +21,18 @@ void Prog::mainloop()
 {
     SDL_Event evt;
 
-    Tri t{
-        .verts = {
-            glm::vec3(0.f, -.5f, 5.f),
-            glm::vec3(-.5f, .5f, 5.f),
-            glm::vec3(.5f, .5f, 5.f)
-        },
-        .color = { 255, 255, 255 },
-        .norm = { 1.f, 0.f, 0.f }
-    };
+    /* Tri t{ */
+    /*     .verts = { */
+    /*         glm::vec3(0.f, -.5f, 5.f), */
+    /*         glm::vec3(-.5f, .5f, 5.f), */
+    /*         glm::vec3(.5f, .5f, 5.f) */
+    /*     }, */
+    /*     .color = { 255, 255, 255 }, */
+    /*     .norm = { 1.f, 0.f, 0.f } */
+    /* }; */
 
-    Model m("res/cube.obj");
+    Model m(glm::vec3(0.f, 0.f, 5.f), glm::vec3(0.f), "res/cube.obj");
+    /* Model m2(glm::vec3(0.f, 0.f, 3.f), glm::vec3(0.f), "res/cube.obj"); */
 
     while (m_running)
     {
@@ -45,15 +46,14 @@ void Prog::mainloop()
             }
         }
 
-        for (int i = 0; i < 3; ++i)
-        {
-            /* t.verts[i].pos = rotate::point(t.verts[i].pos, glm::vec3(0.01f, 0.00f, .00f), glm::vec3(0.f, 0.f, 5.f)); */
-        }
+        m.rotate(glm::vec3(.01f, 0.00f, 0.01f));
+        /* m2.rotate(glm::vec3(.01f, 0.01f, 0.02f)); */
 
         SDL_RenderClear(m_rend);
         reset_buffers();
 
-        rend::triangle(t, m_scr, m_zbuf);
+        m.render(m_scr, m_zbuf);
+        /* m2.render(m_scr, m_zbuf); */
 
         SDL_UpdateTexture(m_scrtex, 0, m_scr, 600 * sizeof(uint32_t));
         SDL_RenderCopy(m_rend, m_scrtex, 0, 0);
