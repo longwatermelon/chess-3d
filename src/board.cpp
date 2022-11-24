@@ -139,6 +139,13 @@ glm::ivec3 Board::raycast(int mx, int my)
     return res;
 }
 
+void Board::zoom(float dz)
+{
+    m_pos.z += dz;
+    if (m_pos.z < 10.f)
+        m_pos.z = 10.f;
+}
+
 void Board::rotate(glm::vec3 rot)
 {
     m_rot += rot;

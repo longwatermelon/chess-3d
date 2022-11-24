@@ -56,6 +56,9 @@ void Prog::mainloop()
                 if (m_rmb)
                     m_board.rotate(glm::vec3(-evt.motion.yrel / 100.f, -evt.motion.xrel / 100.f, 0.f));
                 break;
+            case SDL_MOUSEWHEEL:
+                m_board.zoom(-evt.wheel.y / 5.f);
+                break;
             }
         }
 

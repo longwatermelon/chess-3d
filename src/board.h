@@ -33,6 +33,7 @@ public:
     void render(uint32_t *scr, float *zbuf);
     glm::ivec3 raycast(int mx, int my);
 
+    void zoom(float dz);
     void rotate(glm::vec3 rot);
 
     void select(glm::ivec3 coord);

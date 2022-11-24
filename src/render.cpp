@@ -35,7 +35,7 @@ static void scanline(int ty, int by, SCInfo &s1, SCInfo &s2, const Tri &tri, uin
             if (x >= SCRSIZE) break;
 
             int i = y * SCRSIZE + x;
-            if (i >= 0 && i <= SCRSIZE * SCRSIZE)
+            if (i >= 0 && i < SCRSIZE * SCRSIZE)
             {
                 if (z < zbuf[i])
                 {
