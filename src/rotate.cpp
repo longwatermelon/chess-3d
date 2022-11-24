@@ -1,6 +1,6 @@
 #include "rotate.h"
 
-glm::vec3 rotate::point(glm::vec3 p, glm::vec3 angle)
+glm::vec3 rotate::point(glm::vec3 p, glm::vec3 angle, glm::vec3 center)
 {
     glm::mat3 rotx = {
         1.f, 0.f, 0.f,
@@ -20,6 +20,6 @@ glm::vec3 rotate::point(glm::vec3 p, glm::vec3 angle)
         0.f, 0.f, 1.f
     };
 
-    return rotz * (roty * (rotx * p));
+    return center + (rotz * (roty * (rotx * (p - center))));
 }
 

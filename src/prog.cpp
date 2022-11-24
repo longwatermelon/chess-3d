@@ -1,5 +1,7 @@
 #include "prog.h"
 #include "render.h"
+#include "model.h"
+#include "rotate.h"
 
 Prog::Prog(SDL_Window *w, SDL_Renderer *r)
     : m_window(w), m_rend(r)
@@ -21,12 +23,15 @@ void Prog::mainloop()
 
     Tri t{
         .verts = {
-            Vertex{ .pos = glm::vec3(0.f, 0.f, 5.f), .norm = glm::vec3(1.f, 0.f, 0.f) },
-            Vertex{ .pos = glm::vec3(1.f, 0.f, 5.f), .norm = glm::vec3(0.f, 1.f, 0.f) },
-            Vertex{ .pos = glm::vec3(.5f, 1.f, 5.f), .norm = glm::vec3(0.f, 0.f, 1.f) }
+            glm::vec3(0.f, -.5f, 5.f),
+            glm::vec3(-.5f, .5f, 5.f),
+            glm::vec3(.5f, .5f, 5.f)
         },
-        .color = { 255, 255, 255 }
+        .color = { 255, 255, 255 },
+        .norm = { 1.f, 0.f, 0.f }
     };
+
+    Model m("res/cube.obj");
 
     while (m_running)
     {
@@ -38,6 +43,11 @@ void Prog::mainloop()
                 m_running = false;
                 break;
             }
+        }
+
+        for (int i = 0; i < 3; ++i)
+        {
+            /* t.verts[i].pos = rotate::point(t.verts[i].pos, glm::vec3(0.01f, 0.00f, .00f), glm::vec3(0.f, 0.f, 5.f)); */
         }
 
         SDL_RenderClear(m_rend);

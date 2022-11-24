@@ -5,15 +5,11 @@
 
 #define SCRSIZE 600.f
 
-struct Vertex
-{
-    glm::vec3 pos, norm;
-};
-
 struct Tri
 {
-    std::array<Vertex, 3> verts;
+    std::array<glm::vec3, 3> verts;
     SDL_Color color;
+    glm::vec3 norm;
 };
 
 namespace rend
