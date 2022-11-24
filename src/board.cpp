@@ -84,7 +84,11 @@ void Board::render(uint32_t *scr, float *zbuf)
                     SDL_Color color = m_selected == glm::ivec3(x, y, z) ? SDL_Color{ 255, 0, 0 } :
                         (m_board[y][x][z].color == Color::WHITE ? SDL_Color{ 255, 255, 255 } : SDL_Color{ 50, 50, 50 });
                     if (in_moves) color = { 0, 255, 0 };
-                    if (m_board[y][x][z].type != PieceType::NONE && in_moves) color = { 255, 0, 255 };
+                    if (m_board[y][x][z].type != PieceType::NONE && in_moves)
+                    {
+                        color = { 255, 0, 255 };
+                        type = m_board[y][x][z].type;
+                    }
                     m_models[(int)type - 1].render(pos, m_rot, m_pos, color, scr, zbuf);
                 }
             }
@@ -189,9 +193,59 @@ std::vector<glm::ivec3> Board::possible_moves(glm::ivec3 coord)
             {
                 if (x == coord.x && z == coord.z) continue;
                 glm::ivec3 pos = glm::ivec3(x, y + dy, z);
-                if (at(pos).type != PieceType::NONE)
+                if (at(pos).type != PieceType::NONE && at(pos).color != p.color)
                     moves.emplace_back(pos);
             }
+        }
+    } break;
+    case PieceType::ROOK:
+    {
+        auto func = [&](glm::ivec3 pos) {
+            if (at(pos).type != PieceType::NONE)
+            {
+                if (at(pos).color != p.color)
+                    moves.emplace_back(pos);
+                return false;
+            }
+
+            moves.emplace_back(pos);
+            return true;
+        };
+
+        for (int y = coord.y + 1; y < 8; ++y)
+        {
+            glm::ivec3 pos(coord.x, y, coord.z);
+            if (!func(pos)) break;
+        }
+
+        for (int y = coord.y - 1; y >= 0; --y)
+        {
+            glm::ivec3 pos(coord.x, y, coord.z);
+            if (!func(pos)) break;
+        }
+
+        for (int x = coord.x + 1; x < 8; ++x)
+        {
+            glm::ivec3 pos(x, coord.y, coord.z);
+            if (!func(pos)) break;
+        }
+
+        for (int x = coord.x - 1; x >= 0; --x)
+        {
+            glm::ivec3 pos(x, coord.y, coord.z);
+            if (!func(pos)) break;
+        }
+
+        for (int z = coord.z + 1; z < 8; ++z)
+        {
+            glm::ivec3 pos(coord.x, coord.y, z);
+            if (!func(pos)) break;
+        }
+
+        for (int z = coord.z - 1; z >= 0; --z)
+        {
+            glm::ivec3 pos(coord.x, coord.y, z);
+            if (!func(pos)) break;
         }
     } break;
     default: break;
