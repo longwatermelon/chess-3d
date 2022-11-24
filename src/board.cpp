@@ -313,6 +313,28 @@ std::vector<glm::ivec3> Board::possible_moves(glm::ivec3 coord)
     {
         bishop_moves(moves, coord, p);
     } break;
+    case PieceType::QUEEN:
+    {
+        rook_moves(moves, coord, p);
+        bishop_moves(moves, coord, p);
+    } break;
+    case PieceType::KING:
+    {
+        for (int y = std::max(coord.y - 1, 0); y <= std::min(coord.y + 1, 7); ++y)
+        {
+            for (int x = std::max(coord.x - 1, 0); x <= std::min(coord.x + 1, 7); ++x)
+            {
+                for (int z = std::max(coord.z - 1, 0); z <= std::min(coord.z + 1, 7); ++z)
+                {
+                    glm::ivec3 pos(x, y, z);
+                    if (pos == coord) continue;
+
+                    if (at(pos).type == PieceType::NONE || (at(pos).type != PieceType::NONE && at(pos).color != p.color))
+                        moves.emplace_back(pos);
+                }
+            }
+        }
+    } break;
     default: break;
     }
 
