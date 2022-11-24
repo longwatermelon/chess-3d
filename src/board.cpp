@@ -17,7 +17,7 @@ Board::Board(glm::vec3 pos, const std::string &res_prefix)
             }
 
     std::vector<std::string> pieces = {
-        "pawn.obj"
+        "king.obj"
     };
 
     for (auto &p : pieces)
