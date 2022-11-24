@@ -117,13 +117,30 @@ std::vector<glm::ivec3> Board::possible_moves(glm::ivec3 coord)
     switch (p.type)
     {
     case PieceType::PAWN:
-        moves.emplace_back(glm::vec3(coord.x, coord.y + (p.color == Color::WHITE ? -1 : 1), coord.z));
-        if ((coord.y == 1 && p.color == Color::BLACK) || (coord.y == 6 && p.color == Color::WHITE))
-            moves.emplace_back(glm::vec3(coord.x, coord.y + (p.color == Color::WHITE ? -2 : 2), coord.z));
-        break;
+    {
+        int dy = p.color == Color::WHITE ? -1 : 1;
+        int y = coord.y;
+        coord.y += dy;
+
+        if (at(coord).type == PieceType::NONE)
+            moves.emplace_back(coord);
+
+        if ((y == 1 && p.color == Color::BLACK) || (y == 6 && p.color == Color::WHITE))
+        {
+            coord.y += dy;
+
+            if (at(coord).type == PieceType::NONE)
+                moves.emplace_back(coord);
+        }
+    } break;
     default: break;
     }
 
     return moves;
+}
+
+Piece &Board::at(glm::ivec3 coord)
+{
+    return m_board[coord.y][coord.x][coord.z];
 }
 

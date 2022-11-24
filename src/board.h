@@ -34,6 +34,9 @@ public:
     std::vector<glm::ivec3> possible_moves(glm::ivec3 coord);
 
 private:
+    Piece &at(glm::ivec3 coord);
+
+private:
     glm::vec3 m_pos, m_rot;
     // YXZ
     Piece m_board[8][8][8];
