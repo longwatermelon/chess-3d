@@ -1,4 +1,5 @@
 #pragma once
+#include "render.h"
 #include <SDL2/SDL.h>
 
 class Prog
@@ -10,8 +11,15 @@ public:
     void mainloop();
 
 private:
+    void reset_buffers();
+
+private:
     bool m_running{ true };
     SDL_Window *m_window{ nullptr };
     SDL_Renderer *m_rend{ nullptr };
+
+    uint32_t m_scr[600 * 600];
+    float m_zbuf[600 * 600];
+    SDL_Texture *m_scrtex{ nullptr };
 };
 
