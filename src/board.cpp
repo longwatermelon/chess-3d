@@ -137,6 +137,7 @@ glm::ivec3 Board::raycast(int mx, int my)
         m_board[res.y][res.x][res.z] = m_board[m_selected.y][m_selected.x][m_selected.z];
         m_board[m_selected.y][m_selected.x][m_selected.z].type = PieceType::NONE;
         m_selected = glm::ivec3(-1.f);
+        m_turn = m_turn == Color::WHITE ? Color::BLACK : Color::WHITE;
         return glm::ivec3(-1.f);
     }
 
@@ -157,8 +158,11 @@ void Board::rotate(glm::vec3 rot)
 
 void Board::select(glm::ivec3 coord)
 {
-    m_selected = coord;
-    m_moves = possible_moves(m_selected);
+    if (coord == glm::ivec3(-1) || at(coord).color == m_turn)
+    {
+        m_selected = coord;
+        m_moves = possible_moves(m_selected);
+    }
 }
 
 void Board::rook_moves(std::vector<glm::ivec3> &moves, glm::ivec3 coord, Piece p)

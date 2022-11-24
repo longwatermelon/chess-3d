@@ -2,10 +2,12 @@
 #include "render.h"
 #include "model.h"
 #include "rotate.h"
+#include "util.h"
 
 Prog::Prog(SDL_Window *w, SDL_Renderer *r)
     : m_window(w), m_rend(r), m_board(glm::vec3(0.f, 0.f, 15.f), "res/")
 {
+    m_font = TTF_OpenFont("res/font.ttf", 16);
     m_scrtex = SDL_CreateTexture(m_rend,
         SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
         SCRSIZE, SCRSIZE);
@@ -15,6 +17,7 @@ Prog::Prog(SDL_Window *w, SDL_Renderer *r)
 Prog::~Prog()
 {
     SDL_DestroyTexture(m_scrtex);
+    TTF_CloseFont(m_font);
 }
 
 void Prog::mainloop()
@@ -69,6 +72,12 @@ void Prog::mainloop()
 
         SDL_UpdateTexture(m_scrtex, 0, m_scr, 600 * sizeof(uint32_t));
         SDL_RenderCopy(m_rend, m_scrtex, 0, 0);
+
+        SDL_Texture *tex = util::render_text(m_rend, m_font, (std::string("Turn: ") + (m_board.turn() == Color::WHITE ? "White" : "Black")).c_str());
+        SDL_Rect dst = { .x = 10, .y = 10 };
+        SDL_QueryTexture(tex, 0, 0, &dst.w, &dst.h);
+        SDL_RenderCopy(m_rend, tex, 0, &dst);
+        SDL_DestroyTexture(tex);
 
         SDL_SetRenderDrawColor(m_rend, 255, 0, 0, 255);
         SDL_RenderPresent(m_rend);

@@ -39,6 +39,8 @@ public:
     void select(glm::ivec3 coord);
     std::vector<glm::ivec3> possible_moves(glm::ivec3 coord);
 
+    Color turn() const { return m_turn; }
+
 private:
     Piece &at(glm::ivec3 coord);
     void rook_moves(std::vector<glm::ivec3> &moves, glm::ivec3 coord, Piece p);
@@ -52,5 +54,7 @@ private:
 
     glm::ivec3 m_selected{ -1 };
     std::vector<glm::ivec3> m_moves;
+
+    Color m_turn{ Color::WHITE };
 };
 
