@@ -9,15 +9,55 @@ Board::Board(glm::vec3 pos, const std::string &res_prefix)
     for (int y = 0; y < 8; ++y)
         for (int x = 0; x < 8; ++x)
             for (int z = 0; z < 8; ++z)
-            {
                 m_board[y][x][z] = Piece{ .type = PieceType::NONE };
 
-                if (y == 6) m_board[y][x][z] = Piece{ .type = PieceType::PAWN, .color = Color::WHITE };
-                if (y == 1) m_board[y][x][z] = Piece{ .type = PieceType::PAWN, .color = Color::BLACK };
+                /* if (y == 6) m_board[y][x][z] = Piece{ .type = PieceType::PAWN, .color = Color::WHITE }; */
+                /* if (y == 1) m_board[y][x][z] = Piece{ .type = PieceType::PAWN, .color = Color::BLACK }; */
+
+    for (int x = 0; x < 8; ++x)
+    {
+        for (int z = 0; z < 8; ++z)
+        {
+            m_board[6][x][z] = Piece{ .type = PieceType::PAWN, .color = Color::WHITE };
+            m_board[1][x][z] = Piece{ .type = PieceType::PAWN, .color = Color::BLACK };
+
+            bool rook = (x == 0 || x == 7) || (z == 0 || z == 7);
+            if (rook)
+            {
+                m_board[0][x][z] = Piece{ .type = PieceType::ROOK, .color = Color::BLACK };
+                m_board[7][x][z] = Piece{ .type = PieceType::ROOK, .color = Color::WHITE };
             }
 
+            bool knight = (x == 1 || x == 6) || (z == 1 || z == 6);
+            if (knight && !rook)
+            {
+                m_board[0][x][z] = Piece{ .type = PieceType::KNIGHT, .color = Color::BLACK };
+                m_board[7][x][z] = Piece{ .type = PieceType::KNIGHT, .color = Color::WHITE };
+            }
+
+            bool bishop = (x == 2 || x == 5) || (z == 2 || z == 5);
+            if (bishop && !knight && !rook)
+            {
+                m_board[0][x][z] = Piece{ .type = PieceType::BISHOP, .color = Color::BLACK };
+                m_board[7][x][z] = Piece{ .type = PieceType::BISHOP, .color = Color::WHITE };
+            }
+
+            m_board[0][3][3] = Piece{ .type = PieceType::KING, .color = Color::BLACK };
+            m_board[0][3][4] = Piece{ .type = PieceType::QUEEN, .color = Color::BLACK };
+            m_board[0][4][3] = Piece{ .type = PieceType::QUEEN, .color = Color::BLACK };
+            m_board[0][4][4] = Piece{ .type = PieceType::QUEEN, .color = Color::BLACK };
+
+            m_board[7][3][3] = Piece{ .type = PieceType::KING, .color = Color::WHITE };
+            m_board[7][3][4] = Piece{ .type = PieceType::QUEEN, .color = Color::WHITE };
+            m_board[7][4][3] = Piece{ .type = PieceType::QUEEN, .color = Color::WHITE };
+            m_board[7][4][4] = Piece{ .type = PieceType::QUEEN, .color = Color::WHITE };
+        }
+    }
+
     std::vector<std::string> pieces = {
-        "king.obj"
+        "pawn.obj", "rook.obj",
+        "knight.obj", "bishop.obj",
+        "king.obj", "queen.obj"
     };
 
     for (auto &p : pieces)
