@@ -89,6 +89,24 @@ void Prog::mainloop()
                 SDL_RenderCopy(m_rend, tex, 0, &dst);
                 SDL_DestroyTexture(tex);
             }
+
+            dst.y = 600 - 30;
+            tex = util::render_text(m_rend, m_font, "LMB to interact");
+            SDL_QueryTexture(tex, 0, 0, &dst.w, &dst.h);
+            SDL_RenderCopy(m_rend, tex, 0, &dst);
+            SDL_DestroyTexture(tex);
+
+            tex = util::render_text(m_rend, m_font, "RMB to rotate");
+            SDL_QueryTexture(tex, 0, 0, &dst.w, &dst.h);
+            dst.y -= 20;
+            SDL_RenderCopy(m_rend, tex, 0, &dst);
+            SDL_DestroyTexture(tex);
+
+            tex = util::render_text(m_rend, m_font, "Scroll to zoom");
+            SDL_QueryTexture(tex, 0, 0, &dst.w, &dst.h);
+            dst.y -= 20;
+            SDL_RenderCopy(m_rend, tex, 0, &dst);
+            SDL_DestroyTexture(tex);
         }
 
         SDL_SetRenderDrawColor(m_rend, 255, 0, 0, 255);
