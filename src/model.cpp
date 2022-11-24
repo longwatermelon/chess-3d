@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <glm/gtx/intersect.hpp>
 
 static std::vector<std::string> split_string(std::string str, const std::string &delim)
 {
@@ -105,5 +106,23 @@ void Model::render(glm::vec3 pos, glm::vec3 rot, glm::vec3 center, SDL_Color col
         tmp.color = col;
         rend::triangle(tmp, scr, zbuf);
     }
+}
+
+bool Model::ray_intersect(glm::vec3 ray, glm::vec3 pos, glm::vec3 rot, glm::vec3 center, float *nearest)
+{
+    *nearest = INFINITY;
+
+    for (auto &t : m_tris)
+    {
+        Tri tri = transform_tri(pos, rot, center, t);
+
+        glm::vec2 bary;
+        float dist;
+        if (glm::intersectRayTriangle(glm::vec3(0.f), ray,
+            tri.verts[0], tri.verts[1], tri.verts[2], bary, dist) && dist < *nearest)
+            *nearest = dist;
+    }
+
+    return *nearest < INFINITY;
 }
 

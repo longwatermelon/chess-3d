@@ -30,10 +30,28 @@ void Prog::mainloop()
             case SDL_QUIT:
                 m_running = false;
                 break;
+            case SDL_MOUSEBUTTONDOWN:
+                if (evt.button.button == SDL_BUTTON_LEFT)
+                {
+                    int mx, my;
+                    SDL_GetMouseState(&mx, &my);
+                    glm::ivec3 res = m_board.raycast(mx, my);
+                    m_board.select(res);
+                }
+                if (evt.button.button == SDL_BUTTON_RIGHT)
+                    m_rmb = true;
+                break;
+            case SDL_MOUSEBUTTONUP:
+                if (evt.button.button == SDL_BUTTON_RIGHT)
+                    m_rmb = false;
+                break;
+            case SDL_MOUSEMOTION:
+                if (m_rmb)
+                {
+                    m_board.rotate(glm::vec3(-evt.motion.yrel / 100.f, -evt.motion.xrel / 100.f, 0.f));
+                }
             }
         }
-
-        m_board.rotate(glm::vec3(.01f));
 
         SDL_RenderClear(m_rend);
         reset_buffers();

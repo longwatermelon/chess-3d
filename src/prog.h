@@ -24,5 +24,6 @@ private:
     SDL_Texture *m_scrtex{ nullptr };
 
     Board m_board;
+    bool m_rmb{ false };
 };
 

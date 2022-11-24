@@ -20,6 +20,6 @@ glm::vec3 rotate::point(glm::vec3 p, glm::vec3 angle, glm::vec3 center)
         0.f, 0.f, 1.f
     };
 
-    return center + (rotz * (roty * (rotx * (p - center))));
+    return center + (rotz * (rotx * (roty * (p - center))));
 }
 

@@ -26,13 +26,18 @@ public:
     ~Board();
 
     void render(uint32_t *scr, float *zbuf);
+    glm::ivec3 raycast(int mx, int my);
 
     void rotate(glm::vec3 rot);
+
+    void select(glm::ivec3 coord);
 
 private:
     glm::vec3 m_pos, m_rot;
     // YXZ
     Piece board[8][8][8];
     std::vector<Model> m_models;
+
+    glm::ivec3 m_selected{ -1 };
 };
 
