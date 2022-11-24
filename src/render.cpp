@@ -61,6 +61,9 @@ void rend::triangle(Tri t, uint32_t *scr, float *zbuf)
     if (t.verts[0].z <= .5f || t.verts[1].z <= .5f || t.verts[2].z <= .5f)
         return;
 
+    if (t.norm.z > 0.f)
+        return;
+
     std::array<glm::vec3, 3> proj;
     for (int i = 0; i < 3; ++i)
     {
