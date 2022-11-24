@@ -61,6 +61,7 @@ glm::ivec3 Board::raycast(int mx, int my)
 
     float nearest = INFINITY;
     glm::ivec3 res(-1.f);
+    bool selected_possible_move = false;
 
     for (int y = 0; y < 8; ++y)
     {
@@ -68,19 +69,29 @@ glm::ivec3 Board::raycast(int mx, int my)
         {
             for (int z = 0; z < 8; ++z)
             {
-                if (m_board[y][x][z].type != PieceType::NONE)
+                bool in_moves = std::find(m_moves.begin(), m_moves.end(), glm::ivec3(x, y, z)) != m_moves.end();
+                PieceType type = in_moves ? m_board[m_selected.y][m_selected.x][m_selected.z].type : m_board[y][x][z].type;
+                if (m_board[y][x][z].type != PieceType::NONE || in_moves)
                 {
                     glm::vec3 pos = m_pos + glm::vec3(x - 3.5, y - 3.5, z - 3.5);
 
                     float t;
-                    if (m_models[(int)m_board[y][x][z].type - 1].ray_intersect(dir, pos, m_rot, m_pos, &t) && t < nearest)
+                    if (m_models[(int)type - 1].ray_intersect(dir, pos, m_rot, m_pos, &t) && t < nearest)
                     {
                         nearest = t;
                         res = glm::ivec3(x, y, z);
+                        selected_possible_move = in_moves;
                     }
                 }
             }
         }
+    }
+
+    if (selected_possible_move)
+    {
+        m_board[res.y][res.x][res.z] = m_board[m_selected.y][m_selected.x][m_selected.z];
+        m_board[m_selected.y][m_selected.x][m_selected.z].type = PieceType::NONE;
+        return glm::ivec3(-1.f);
     }
 
     return res;
