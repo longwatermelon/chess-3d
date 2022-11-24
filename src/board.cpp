@@ -138,6 +138,7 @@ glm::ivec3 Board::raycast(int mx, int my)
         m_board[m_selected.y][m_selected.x][m_selected.z].type = PieceType::NONE;
         m_selected = glm::ivec3(-1.f);
         m_turn = m_turn == Color::WHITE ? Color::BLACK : Color::WHITE;
+        detect_check(m_turn);
         return glm::ivec3(-1.f);
     }
 
@@ -367,5 +368,33 @@ std::vector<glm::ivec3> Board::possible_moves(glm::ivec3 coord)
 Piece &Board::at(glm::ivec3 coord)
 {
     return m_board[coord.y][coord.x][coord.z];
+}
+
+void Board::detect_check(Color c)
+{
+    std::vector<glm::ivec3> moves, king_moves;
+
+    for (int y = 0; y < 8; ++y)
+        for (int x = 0; x < 8; ++x)
+            for (int z = 0; z < 8; ++z)
+            {
+                glm::ivec3 pos(x, y, z);
+                if (at(pos).color != c)
+                {
+                    std::vector<glm::ivec3> tmp = possible_moves(pos);
+                    moves.insert(moves.end(), tmp.begin(), tmp.end());
+                }
+
+                if (at(pos).type == PieceType::KING && at(pos).color == c)
+                {
+                    king_moves = possible_moves(pos);
+                }
+            }
+
+    for (auto &m : king_moves)
+    {
+        if (std::find(moves.begin(), moves.end(), m) != moves.end())
+            m_check = c;
+    }
 }
 

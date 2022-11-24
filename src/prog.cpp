@@ -73,11 +73,23 @@ void Prog::mainloop()
         SDL_UpdateTexture(m_scrtex, 0, m_scr, 600 * sizeof(uint32_t));
         SDL_RenderCopy(m_rend, m_scrtex, 0, 0);
 
-        SDL_Texture *tex = util::render_text(m_rend, m_font, (std::string("Turn: ") + (m_board.turn() == Color::WHITE ? "White" : "Black")).c_str());
-        SDL_Rect dst = { .x = 10, .y = 10 };
-        SDL_QueryTexture(tex, 0, 0, &dst.w, &dst.h);
-        SDL_RenderCopy(m_rend, tex, 0, &dst);
-        SDL_DestroyTexture(tex);
+        {
+            SDL_Texture *tex = util::render_text(m_rend, m_font, (std::string("Turn: ") + (m_board.turn() == Color::WHITE ? "White" : "Black")).c_str());
+            SDL_Rect dst = { .x = 10, .y = 10 };
+            SDL_QueryTexture(tex, 0, 0, &dst.w, &dst.h);
+            SDL_RenderCopy(m_rend, tex, 0, &dst);
+            SDL_DestroyTexture(tex);
+
+            Color check = m_board.in_check();
+            if (check != Color::NONE)
+            {
+                tex = util::render_text(m_rend, m_font, (std::string(check == Color::WHITE ? "White " : "Black ") + "is in check").c_str());
+                SDL_QueryTexture(tex, 0, 0, &dst.w, &dst.h);
+                dst.y += 20;
+                SDL_RenderCopy(m_rend, tex, 0, &dst);
+                SDL_DestroyTexture(tex);
+            }
+        }
 
         SDL_SetRenderDrawColor(m_rend, 255, 0, 0, 255);
         SDL_RenderPresent(m_rend);

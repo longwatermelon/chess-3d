@@ -15,7 +15,8 @@ enum class PieceType
 enum class Color
 {
     WHITE,
-    BLACK
+    BLACK,
+    NONE
 };
 
 struct Piece
@@ -39,7 +40,10 @@ public:
     void select(glm::ivec3 coord);
     std::vector<glm::ivec3> possible_moves(glm::ivec3 coord);
 
+    void detect_check(Color c);
+
     Color turn() const { return m_turn; }
+    Color in_check() const { return m_check; }
 
 private:
     Piece &at(glm::ivec3 coord);
@@ -56,5 +60,6 @@ private:
     std::vector<glm::ivec3> m_moves;
 
     Color m_turn{ Color::WHITE };
+    Color m_check{ Color::NONE };
 };
 
