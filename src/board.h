@@ -41,6 +41,8 @@ public:
 
 private:
     Piece &at(glm::ivec3 coord);
+    void rook_moves(std::vector<glm::ivec3> &moves, glm::ivec3 coord, Piece p);
+    void bishop_moves(std::vector<glm::ivec3> &moves, glm::ivec3 coord, Piece p);
 
 private:
     glm::vec3 m_pos, m_rot;

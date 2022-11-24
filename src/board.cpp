@@ -161,6 +161,113 @@ void Board::select(glm::ivec3 coord)
     m_moves = possible_moves(m_selected);
 }
 
+void Board::rook_moves(std::vector<glm::ivec3> &moves, glm::ivec3 coord, Piece p)
+{
+    auto func = [&](glm::ivec3 pos) {
+        if (at(pos).type != PieceType::NONE)
+        {
+            if (at(pos).color != p.color)
+                moves.emplace_back(pos);
+            return false;
+        }
+
+        moves.emplace_back(pos);
+        return true;
+    };
+
+    for (int y = coord.y + 1; y < 8; ++y)
+    {
+        glm::ivec3 pos(coord.x, y, coord.z);
+        if (!func(pos)) break;
+    }
+
+    for (int y = coord.y - 1; y >= 0; --y)
+    {
+        glm::ivec3 pos(coord.x, y, coord.z);
+        if (!func(pos)) break;
+    }
+
+    for (int x = coord.x + 1; x < 8; ++x)
+    {
+        glm::ivec3 pos(x, coord.y, coord.z);
+        if (!func(pos)) break;
+    }
+
+    for (int x = coord.x - 1; x >= 0; --x)
+    {
+        glm::ivec3 pos(x, coord.y, coord.z);
+        if (!func(pos)) break;
+    }
+
+    for (int z = coord.z + 1; z < 8; ++z)
+    {
+        glm::ivec3 pos(coord.x, coord.y, z);
+        if (!func(pos)) break;
+    }
+
+    for (int z = coord.z - 1; z >= 0; --z)
+    {
+        glm::ivec3 pos(coord.x, coord.y, z);
+        if (!func(pos)) break;
+    }
+}
+
+void Board::bishop_moves(std::vector<glm::ivec3> &moves, glm::ivec3 coord, Piece p)
+{
+    auto func = [&](glm::ivec3 pos) {
+        if (at(pos).type != PieceType::NONE)
+        {
+            if (at(pos).color != p.color)
+                moves.emplace_back(pos);
+            return false;
+        }
+
+        moves.emplace_back(pos);
+        return true;
+    };
+
+    std::array<bool, 8> cont;
+    cont.fill(true);
+    for (int y = coord.y - 1; y >= 0; --y)
+    {
+        int dy = y - coord.y;
+        if (cont[0]) if (!func(glm::ivec3(coord.x + dy, y, coord.z + dy))) cont[0] = false;
+        if (cont[1]) if (!func(glm::ivec3(coord.x - dy, y, coord.z + dy))) cont[1] = false;
+        if (cont[2]) if (!func(glm::ivec3(coord.x + dy, y, coord.z - dy))) cont[2] = false;
+        if (cont[3]) if (!func(glm::ivec3(coord.x - dy, y, coord.z - dy))) cont[3] = false;
+        if (cont[4]) if (!func(glm::ivec3(coord.x, y, coord.z - dy))) cont[4] = false;
+        if (cont[5]) if (!func(glm::ivec3(coord.x, y, coord.z + dy))) cont[5] = false;
+        if (cont[6]) if (!func(glm::ivec3(coord.x + dy, y, coord.z))) cont[6] = false;
+        if (cont[7]) if (!func(glm::ivec3(coord.x - dy, y, coord.z))) cont[7] = false;
+
+        bool con = false;
+        for (size_t i = 0; i < cont.size(); ++i)
+            if (cont[i]) con = true;
+
+        if (!con) break;
+    }
+
+    cont.fill(true);
+    for (int y = coord.y + 1; y < 8; ++y)
+    {
+        int dy = y - coord.y;
+        if (cont[0]) if (!func(glm::ivec3(coord.x + dy, y, coord.z + dy))) cont[0] = false;
+        if (cont[1]) if (!func(glm::ivec3(coord.x - dy, y, coord.z + dy))) cont[1] = false;
+        if (cont[2]) if (!func(glm::ivec3(coord.x + dy, y, coord.z - dy))) cont[2] = false;
+        if (cont[3]) if (!func(glm::ivec3(coord.x - dy, y, coord.z - dy))) cont[3] = false;
+        if (cont[4]) if (!func(glm::ivec3(coord.x, y, coord.z - dy))) cont[4] = false;
+        if (cont[5]) if (!func(glm::ivec3(coord.x, y, coord.z + dy))) cont[5] = false;
+        if (cont[6]) if (!func(glm::ivec3(coord.x + dy, y, coord.z))) cont[6] = false;
+        if (cont[7]) if (!func(glm::ivec3(coord.x - dy, y, coord.z))) cont[7] = false;
+
+        bool con = false;
+        for (size_t i = 0; i < cont.size(); ++i)
+            if (cont[i]) con = true;
+
+        if (!con) break;
+    }
+}
+
 std::vector<glm::ivec3> Board::possible_moves(glm::ivec3 coord)
 {
     Piece p = m_board[coord.y][coord.x][coord.z];
@@ -200,108 +307,11 @@ std::vector<glm::ivec3> Board::possible_moves(glm::ivec3 coord)
     } break;
     case PieceType::ROOK:
     {
-        auto func = [&](glm::ivec3 pos) {
-            if (at(pos).type != PieceType::NONE)
-            {
-                if (at(pos).color != p.color)
-                    moves.emplace_back(pos);
-                return false;
-            }
-
-            moves.emplace_back(pos);
-            return true;
-        };
-
-        for (int y = coord.y + 1; y < 8; ++y)
-        {
-            glm::ivec3 pos(coord.x, y, coord.z);
-            if (!func(pos)) break;
-        }
-
-        for (int y = coord.y - 1; y >= 0; --y)
-        {
-            glm::ivec3 pos(coord.x, y, coord.z);
-            if (!func(pos)) break;
-        }
-
-        for (int x = coord.x + 1; x < 8; ++x)
-        {
-            glm::ivec3 pos(x, coord.y, coord.z);
-            if (!func(pos)) break;
-        }
-
-        for (int x = coord.x - 1; x >= 0; --x)
-        {
-            glm::ivec3 pos(x, coord.y, coord.z);
-            if (!func(pos)) break;
-        }
-
-        for (int z = coord.z + 1; z < 8; ++z)
-        {
-            glm::ivec3 pos(coord.x, coord.y, z);
-            if (!func(pos)) break;
-        }
-
-        for (int z = coord.z - 1; z >= 0; --z)
-        {
-            glm::ivec3 pos(coord.x, coord.y, z);
-            if (!func(pos)) break;
-        }
+        rook_moves(moves, coord, p);
     } break;
     case PieceType::BISHOP:
     {
-        auto func = [&](glm::ivec3 pos) {
-            if (at(pos).type != PieceType::NONE)
-            {
-                if (at(pos).color != p.color)
-                    moves.emplace_back(pos);
-                return false;
-            }
-
-            moves.emplace_back(pos);
-            return true;
-        };
-
-        std::array<bool, 8> cont;
-        cont.fill(true);
-        for (int y = coord.y - 1; y >= 0; --y)
-        {
-            int dy = y - coord.y;
-            if (cont[0]) if (!func(glm::ivec3(coord.x + dy, y, coord.z + dy))) cont[0] = false;
-            if (cont[1]) if (!func(glm::ivec3(coord.x - dy, y, coord.z + dy))) cont[1] = false;
-            if (cont[2]) if (!func(glm::ivec3(coord.x + dy, y, coord.z - dy))) cont[2] = false;
-            if (cont[3]) if (!func(glm::ivec3(coord.x - dy, y, coord.z - dy))) cont[3] = false;
-            if (cont[4]) if (!func(glm::ivec3(coord.x, y, coord.z - dy))) cont[4] = false;
-            if (cont[5]) if (!func(glm::ivec3(coord.x, y, coord.z + dy))) cont[5] = false;
-            if (cont[6]) if (!func(glm::ivec3(coord.x + dy, y, coord.z))) cont[6] = false;
-            if (cont[7]) if (!func(glm::ivec3(coord.x - dy, y, coord.z))) cont[7] = false;
-
-            bool con = false;
-            for (size_t i = 0; i < cont.size(); ++i)
-                if (cont[i]) con = true;
-
-            if (!con) break;
-        }
-
-        cont.fill(true);
-        for (int y = coord.y + 1; y < 8; ++y)
-        {
-            int dy = y - coord.y;
-            if (cont[0]) if (!func(glm::ivec3(coord.x + dy, y, coord.z + dy))) cont[0] = false;
-            if (cont[1]) if (!func(glm::ivec3(coord.x - dy, y, coord.z + dy))) cont[1] = false;
-            if (cont[2]) if (!func(glm::ivec3(coord.x + dy, y, coord.z - dy))) cont[2] = false;
-            if (cont[3]) if (!func(glm::ivec3(coord.x - dy, y, coord.z - dy))) cont[3] = false;
-            if (cont[4]) if (!func(glm::ivec3(coord.x, y, coord.z - dy))) cont[4] = false;
-            if (cont[5]) if (!func(glm::ivec3(coord.x, y, coord.z + dy))) cont[5] = false;
-            if (cont[6]) if (!func(glm::ivec3(coord.x + dy, y, coord.z))) cont[6] = false;
-            if (cont[7]) if (!func(glm::ivec3(coord.x - dy, y, coord.z))) cont[7] = false;
-
-            bool con = false;
-            for (size_t i = 0; i < cont.size(); ++i)
-                if (cont[i]) con = true;
-
-            if (!con) break;
-        }
+        bishop_moves(moves, coord, p);
     } break;
     default: break;
     }
