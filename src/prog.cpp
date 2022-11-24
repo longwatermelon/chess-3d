@@ -39,17 +39,23 @@ void Prog::mainloop()
                     m_board.select(res);
                 }
                 if (evt.button.button == SDL_BUTTON_RIGHT)
+                {
                     m_rmb = true;
+                    SDL_SetRelativeMouseMode(SDL_TRUE);
+                }
                 break;
             case SDL_MOUSEBUTTONUP:
                 if (evt.button.button == SDL_BUTTON_RIGHT)
+                {
                     m_rmb = false;
+                    SDL_SetRelativeMouseMode(SDL_FALSE);
+                    SDL_WarpMouseInWindow(m_window, SCRSIZE / 2, SCRSIZE / 2);
+                }
                 break;
             case SDL_MOUSEMOTION:
                 if (m_rmb)
-                {
                     m_board.rotate(glm::vec3(-evt.motion.yrel / 100.f, -evt.motion.xrel / 100.f, 0.f));
-                }
+                break;
             }
         }
 
