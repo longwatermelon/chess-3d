@@ -91,6 +91,7 @@ glm::ivec3 Board::raycast(int mx, int my)
     {
         m_board[res.y][res.x][res.z] = m_board[m_selected.y][m_selected.x][m_selected.z];
         m_board[m_selected.y][m_selected.x][m_selected.z].type = PieceType::NONE;
+        m_selected = glm::ivec3(-1.f);
         return glm::ivec3(-1.f);
     }
 
@@ -117,7 +118,8 @@ std::vector<glm::ivec3> Board::possible_moves(glm::ivec3 coord)
     {
     case PieceType::PAWN:
         moves.emplace_back(glm::vec3(coord.x, coord.y + (p.color == Color::WHITE ? -1 : 1), coord.z));
-        moves.emplace_back(glm::vec3(coord.x, coord.y + (p.color == Color::WHITE ? -2 : 2), coord.z));
+        if ((coord.y == 1 && p.color == Color::BLACK) || (coord.y == 6 && p.color == Color::WHITE))
+            moves.emplace_back(glm::vec3(coord.x, coord.y + (p.color == Color::WHITE ? -2 : 2), coord.z));
         break;
     default: break;
     }
