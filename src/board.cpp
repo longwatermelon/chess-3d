@@ -378,10 +378,8 @@ std::vector<glm::ivec3> Board::possible_moves(glm::ivec3 coord, bool ignore_chec
             Color check = m_check;
             detect_check(m_turn);
             if (m_check == Color::NONE)
-            {
-                m_check = check;
                 legal_moves.emplace_back(m);
-            }
+            m_check = check;
 
             at(m) = orig;
             at(coord).type = type;
