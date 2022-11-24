@@ -1,10 +1,22 @@
 #pragma once
 #include "model.h"
 
-enum class Piece
+enum class PieceType
 {
     NONE = 0,
     PAWN = 1
+};
+
+enum class Color
+{
+    WHITE,
+    BLACK
+};
+
+struct Piece
+{
+    PieceType type{ PieceType::NONE };
+    Color color{ Color::WHITE };
 };
 
 class Board

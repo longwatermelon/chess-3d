@@ -97,11 +97,12 @@ static Tri transform_tri(glm::vec3 mpos, glm::vec3 mrot, glm::vec3 center, Tri t
     return t;
 }
 
-void Model::render(glm::vec3 pos, glm::vec3 rot, glm::vec3 center, uint32_t *scr, float *zbuf)
+void Model::render(glm::vec3 pos, glm::vec3 rot, glm::vec3 center, SDL_Color col, uint32_t *scr, float *zbuf)
 {
     for (auto &t : m_tris)
     {
         Tri tmp = transform_tri(pos, rot, center, t);
+        tmp.color = col;
         rend::triangle(tmp, scr, zbuf);
     }
 }
