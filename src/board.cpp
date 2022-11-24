@@ -363,7 +363,7 @@ std::vector<glm::ivec3> Board::possible_moves(glm::ivec3 coord, bool ignore_chec
     default: break;
     }
 
-    if (!ignore_check && m_check != Color::NONE)
+    if (!ignore_check/* && m_check != Color::NONE*/)
     {
         std::vector<glm::ivec3> legal_moves;
 
@@ -376,7 +376,7 @@ std::vector<glm::ivec3> Board::possible_moves(glm::ivec3 coord, bool ignore_chec
             at(coord).type = PieceType::NONE;
 
             Color check = m_check;
-            detect_check(m_check);
+            detect_check(m_turn);
             if (m_check == Color::NONE)
             {
                 m_check = check;
