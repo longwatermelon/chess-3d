@@ -44,6 +44,7 @@ void Board::render(uint32_t *scr, float *zbuf)
                     SDL_Color color = m_selected == glm::ivec3(x, y, z) ? SDL_Color{ 255, 0, 0 } :
                         (m_board[y][x][z].color == Color::WHITE ? SDL_Color{ 255, 255, 255 } : SDL_Color{ 50, 50, 50 });
                     if (in_moves) color = { 0, 255, 0 };
+                    if (m_board[y][x][z].type != PieceType::NONE && in_moves) color = { 255, 0, 255 };
                     m_models[(int)type - 1].render(pos, m_rot, m_pos, color, scr, zbuf);
                 }
             }
@@ -118,6 +119,7 @@ std::vector<glm::ivec3> Board::possible_moves(glm::ivec3 coord)
     {
     case PieceType::PAWN:
     {
+        // Forward moves
         int dy = p.color == Color::WHITE ? -1 : 1;
         int y = coord.y;
         coord.y += dy;
@@ -131,6 +133,18 @@ std::vector<glm::ivec3> Board::possible_moves(glm::ivec3 coord)
 
             if (at(coord).type == PieceType::NONE)
                 moves.emplace_back(coord);
+        }
+
+        // Take moves
+        for (int x = std::max(coord.x - 1, 0); x <= std::min(coord.x + 1, 7); ++x)
+        {
+            for (int z = std::max(coord.z - 1, 0); z <= std::min(coord.z + 1, 7); ++z)
+            {
+                if (x == coord.x && z == coord.z) continue;
+                glm::ivec3 pos = glm::ivec3(x, y + dy, z);
+                if (at(pos).type != PieceType::NONE)
+                    moves.emplace_back(pos);
+            }
         }
     } break;
     default: break;
