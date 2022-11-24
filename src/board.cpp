@@ -372,7 +372,8 @@ Piece &Board::at(glm::ivec3 coord)
 
 void Board::detect_check(Color c)
 {
-    std::vector<glm::ivec3> moves, king_moves;
+    std::vector<glm::ivec3> moves;
+    glm::ivec3 king_pos;
 
     for (int y = 0; y < 8; ++y)
         for (int x = 0; x < 8; ++x)
@@ -386,15 +387,12 @@ void Board::detect_check(Color c)
                 }
 
                 if (at(pos).type == PieceType::KING && at(pos).color == c)
-                {
-                    king_moves = possible_moves(pos);
-                }
+                    king_pos = pos;
             }
 
-    for (auto &m : king_moves)
-    {
-        if (std::find(moves.begin(), moves.end(), m) != moves.end())
-            m_check = c;
-    }
+    if (std::find(moves.begin(), moves.end(), king_pos) != moves.end())
+        m_check = c;
+    else
+        m_check = Color::NONE;
 }
 
