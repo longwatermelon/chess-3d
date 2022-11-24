@@ -21,9 +21,9 @@ void Prog::mainloop()
 
     Tri t{
         .verts = {
-            glm::vec3(0.f, 0.f, 5.f),
-            glm::vec3(1.f, 0.f, 5.f),
-            glm::vec3(1.f, 1.f, 5.f)
+            Vertex{ .pos = glm::vec3(0.f, 0.f, 5.f), .norm = glm::vec3(1.f, 0.f, 0.f) },
+            Vertex{ .pos = glm::vec3(1.f, 0.f, 5.f), .norm = glm::vec3(0.f, 1.f, 0.f) },
+            Vertex{ .pos = glm::vec3(.5f, 1.f, 5.f), .norm = glm::vec3(0.f, 0.f, 1.f) }
         },
         .color = { 255, 255, 255 }
     };

@@ -5,9 +5,14 @@
 
 #define SCRSIZE 600.f
 
+struct Vertex
+{
+    glm::vec3 pos, norm;
+};
+
 struct Tri
 {
-    std::array<glm::vec3, 3> verts;
+    std::array<Vertex, 3> verts;
     SDL_Color color;
 };
 
