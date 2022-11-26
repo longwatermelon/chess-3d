@@ -14,21 +14,21 @@ struct SCInfo
     float x, z, sx, sz;
 };
 
-static void scanline(int ty, int by, SCInfo &s1, SCInfo &s2, const Tri &tri, uint32_t *scr, float *zbuf)
+static void scanline(int ty, int by, SCInfo &left, SCInfo &right, const Tri &tri, uint32_t *scr, float *zbuf)
 {
     for (int y = ty; y < by; ++y)
     {
-        float z = s1.z;
-        float sz = (s2.z - s1.z) / std::abs(s2.x - s1.x);
+        float z = left.z;
+        float sz = (right.z - left.z) / (right.x - left.x);
 
-        for (int x = std::min(s1.x, s2.x); x < std::max(s1.x, s2.x); ++x)
+        for (int x = left.x; x <= right.x; ++x)
         {
             z += sz;
 
             if (x < 0)
             {
                 z += sz * -x;
-                x = 0;
+                x = -1;
                 continue;
             }
 
@@ -48,11 +48,11 @@ static void scanline(int ty, int by, SCInfo &s1, SCInfo &s2, const Tri &tri, uin
             }
         }
 
-        s1.x += s1.sx;
-        s2.x += s2.sx;
+        left.x += left.sx;
+        right.x += right.sx;
 
-        s1.z += s1.sz;
-        s2.z += s2.sz;
+        left.z += left.sz;
+        right.z += right.sz;
     }
 }
 
@@ -88,7 +88,7 @@ void rend::triangle(Tri t, uint32_t *scr, float *zbuf)
            s01 = gen_sc(0, 1),
            s12 = gen_sc(1, 2);
 
-    scanline(proj[0].y, proj[1].y, s02, s01, t, scr, zbuf);
-    scanline(proj[1].y, proj[2].y, s02, s12, t, scr, zbuf);
+    scanline(proj[0].y, proj[1].y, s02.sx < s01.sx ? s02 : s01, s02.sx > s01.sx ? s02 : s01, t, scr, zbuf);
+    scanline(proj[1].y, proj[2].y, s02.x < s12.x ? s02 : s12, s02.x > s12.x ? s02 : s12, t, scr, zbuf);
 }
 
